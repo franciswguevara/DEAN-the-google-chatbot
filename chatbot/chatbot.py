@@ -54,9 +54,6 @@ def receive_message():
         #Facebook Messenger ID for user so we know where to send response back to
         recipient_id = str(message['sender']['id'])
         
-        #Retrieve NLP analysis
-        nlp = message['message'].get('nlp')
-
         message_dict[recipient_id] = message
 
         #If user sent a message
@@ -80,6 +77,9 @@ def receive_message():
             
             #If message is text
             if text := message['message'].get('text'):                            
+                
+                #Retrieve NLP analysis
+                nlp = message['message'].get('nlp')
                 
                 if message['message'].get('quick_reply') == "registration":
                     quick_replies = [
