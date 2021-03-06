@@ -76,14 +76,12 @@ def receive_message():
             
             #If message is text
             if message['message'].get('text'):                            
-            
-                #All other cases 
+                
+                answer = process_message(text)
+                if answer:
+                    send_message(recipient_id,answer)
                 else:
-                    answer = process_message(text)
-                    if answer:
-                        send_message(recipient_id,answer)
-                    else:
-                        send_message(recipient_id,"Can you say that again? Make sure that you type 'search' before your question. Ex. search Who is the President of the Philippines?")
+                    send_message(recipient_id,"What do you mean..When you nod your head yes but you wanna say no :(")
                 return "Messaged Processed"
             #if user sends us a GIF, photo,video, or any other non-text item
             if message['message'].get('attachments'):
