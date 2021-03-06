@@ -82,6 +82,7 @@ def receive_message():
                 nlp = message['message'].get('nlp')
                 
                 if message['message'].get('quick_reply') == "registration":
+                    print(message['message'].get('quick_reply'),"========================================================")
                     quick_replies = [
                                         {
                                             "content_type":"user_email",
