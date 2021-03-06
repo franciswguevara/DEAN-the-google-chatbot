@@ -81,20 +81,22 @@ def receive_message():
                 #Retrieve NLP analysis
                 nlp = message['message'].get('nlp')
                 
-                if message['message'].get('quick_reply') == "registration":
-                    print(message['message'].get('quick_reply'),"========================================================")
-                    quick_replies = [
-                                        {
-                                            "content_type":"user_email",
-                                            "title": "E-Mail Address",
-                                            "payload":"email",
-                                        },{
-                                            "content_type":"text",
-                                            "title": "Main Menu",
-                                            "payload":"menu"
-                                        }
-                                    ]
-                    quick_reply_message(recipient_id,"Please share us the email attached to your Facebook Account to verify your membership",quick_replies)
+                if response := message['message'].get('quick_reply'):
+                    response = response['payload'] 
+                    
+                    if response == 'registration':
+                        quick_replies = [
+                                            {
+                                                "content_type":"user_email",
+                                                "title": "E-Mail Address",
+                                                "payload":"email",
+                                            },{
+                                                "content_type":"text",
+                                                "title": "Main Menu",
+                                                "payload":"menu"
+                                            }
+                                        ]
+                        quick_reply_message(recipient_id,"Please share us the email attached to your Facebook Account to verify your membership",quick_replies)
                 elif answer := process_message(text):
                     send_message(recipient_id,answer)
                 elif text == 'Main Menu':
