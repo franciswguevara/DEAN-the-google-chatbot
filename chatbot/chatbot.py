@@ -95,11 +95,11 @@ def receive_message():
                 if message['postback']['title'] == 'Get Started':
                     quick_replies = [
                                         {
-                                            "context_type":"text",
+                                            "content_type":"text",
                                             "title": "AJMA Member",
                                             "payload":"registration",
                                         },{
-                                            "context_type":"text",
+                                            "content_type":"text",
                                             "title": "External Partner",
                                             "payload":"partner"
                                         }
