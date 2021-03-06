@@ -53,6 +53,10 @@ def receive_message():
 
         #Facebook Messenger ID for user so we know where to send response back to
         recipient_id = str(message['sender']['id'])
+        
+        #Retrieve NLP analysis
+        nlp = message['message'].get('nlp')
+
         message_dict[recipient_id] = message
 
         #If user sent a message
@@ -77,9 +81,34 @@ def receive_message():
             #If message is text
             if text := message['message'].get('text'):                            
                 
-                answer = process_message(text)
-                if answer:
+                if message['message'].get('quick_reply') == "registration":
+                    quick_replies = [
+                                        {
+                                            "content_type":"user_email",
+                                            "title": "E-Mail Address",
+                                            "payload":"email",
+                                        },{
+                                            "content_type":"text",
+                                            "title": "Main Menu",
+                                            "payload":"menu"
+                                        }
+                                    ]
+                    quick_reply_message(recipient_id,"Please share us the email attached to your Facebook Account to verify your membership",quick_replies)
+                elif answer := process_message(text):
                     send_message(recipient_id,answer)
+                elif text == 'Main Menu':
+                    quick_replies = [
+                                        {
+                                            "content_type":"text",
+                                            "title": "AJMA Member",
+                                            "payload":"registration",
+                                        },{
+                                            "content_type":"text",
+                                            "title": "External Partner",
+                                            "payload":"partner"
+                                        }
+                                    ]
+                    quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Marketing Association. Please use any of the quick replies below to navigate.",quick_replies)
                 else:
                     send_message(recipient_id,"What do you mean..When you nod your head yes but you wanna say no :(")
                 return "Messaged Processed"
@@ -104,7 +133,7 @@ def receive_message():
                                             "payload":"partner"
                                         }
                                     ]
-                    quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Management Association. Please use any of the quick replies below to navigate.",quick_replies)
+                    quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Marketing Association. Please use any of the quick replies below to navigate.",quick_replies)
                 
         else:
             #gets triggered if there is another type of message that's not message/postback
