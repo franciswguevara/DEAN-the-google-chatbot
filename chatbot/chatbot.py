@@ -93,12 +93,29 @@ def receive_message():
             if message['postback'].get('title'):
                 #If user clicks the get started button
                 if message['postback']['title'] == 'Get Started':
-                    send_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Management Association. Please use any of the quick replies below to navigate.")
+                    quick_replies = [
+                                        {
+                                            "context_type":"text",
+                                            "title": "AJMA Member",
+                                            "payload":"registration",
+                                        },{
+                                            "context_type":"text",
+                                            "title": "External Partner",
+                                            "payload":"partner"
+                                        }
+                                    ]
+                    quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Management Association. Please use any of the quick replies below to navigate.",quick_replies)
                 
         else:
             #gets triggered if there is another type of message that's not message/postback
             pass
     return "Message Processed"
+
+def quick_reply_message(recipient_id,message,quick_replies):
+    '''Send quick reply message to person'''
+    bot.send_quick_replies(recipient_id,message,quick_replies)
+    return "success"
+
 
 def verify_fb_token(token_sent):
     #take token sent by facebook and verify it matches the verify token you sent
