@@ -75,7 +75,7 @@ def receive_message():
                 return 'message processed'
             
             #If message is text
-            if message['message'].get('text'):                            
+            if text := message['message'].get('text'):                            
                 
                 answer = process_message(text)
                 if answer:
