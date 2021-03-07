@@ -97,6 +97,57 @@ def receive_message():
                                             }
                                         ]
                         quick_reply_message(recipient_id,"Please share us the email attached to your Facebook Account to verify your membership",quick_replies)
+                    
+                    elif re.search(r"^[a-z0-9\._]+[@]\w+[.]\w+",response):
+                        quick_replies = [
+                                            {
+                                                "content_type":"text",
+                                                "title": "Retention Status",
+                                                "payload":"retention",
+                                            },{
+                                                "content_type":"text",
+                                                "title": "Events",
+                                                "payload":"events"
+                                            }
+                                        ]
+                        quick_reply_message(recipient_id,"User Verified! Welcome AJMAn! Select from the following options to continue.",quick_replies)
+                    
+                    elif response == 'retention':
+                        quick_replies = [
+                                            {
+                                                "content_type":"text",
+                                                "title": "Main Menu",
+                                                "payload":"menu"
+                                            }
+                                        ]
+                        quick_reply_message(recipient_id, "You have 3 checks left until you're retained. Keep it up!",quick_replies)
+
+                    elif response == 'events':
+                        quick_replies = [
+                                            {
+                                                "content_type":"text",
+                                                "title": "Main Menu",
+                                                "payload":"menu"
+                                            }
+                                        ]
+                        send_message(recipient_id, "AJMA Week is this week! Bond with your friends in fun and games here! Register for our exciting events at bit.ly/AJMAWeek")
+                        send_message(recipient_id, "Brand Camp is this week! Learn all about the foundations of Marketing here! Register for our exciting events at bit.ly/BrandCamp")
+                        quick_reply_message(recipient_id, "That's it for this week!",quick_replies)
+                    
+                    elif response == 'Main Menu':
+                        quick_replies = [
+                                            {
+                                                "content_type":"text",
+                                                "title": "AJMA Member",
+                                                "payload":"registration",
+                                            },{
+                                                "content_type":"text",
+                                                "title": "External Partner",
+                                                "payload":"partner"
+                                            }
+                                        ]
+                        quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Marketing Association. Please use any of the quick replies below to navigate.",quick_replies)
+                    
                 elif answer := process_message(text):
                     send_message(recipient_id,answer)
                 elif text == 'Main Menu':
