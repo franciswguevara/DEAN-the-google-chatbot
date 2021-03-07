@@ -154,6 +154,17 @@ def receive_message():
                         send_message(recipient_id, "Brand Camp is this week! Learn all about the foundations of Marketing here! Register for our exciting events at bit.ly/BrandCamp")
                         quick_reply_message(recipient_id, "That's it for this week!",quick_replies)
                     
+                    elif response == 'partner':
+                        quick_replies = [
+                                            {
+                                                "content_type":"text",
+                                                "title": "Main Menu",
+                                                "payload":"menu"
+                                            }
+                                        ]
+        
+                        quick_reply_message(recipient_id,"Good day! You may email ajma.orgpartnerships@gmail.com for organizational partnerships or ajma.partnerships@gmail.com for external partnerships. Thank you!",quick_replies)
+
                     elif response == 'menu':
                         quick_replies = [
                                             {
