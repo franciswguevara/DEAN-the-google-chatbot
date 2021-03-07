@@ -108,6 +108,10 @@ def receive_message():
                                                 "content_type":"text",
                                                 "title": "Events",
                                                 "payload":"events"
+                                            },{
+                                                "content_type":"text",
+                                                "title": "Main Menu",
+                                                "payload":"menu"
                                             }
                                         ]
                         quick_reply_message(recipient_id,"User Verified! Welcome AJMAn! Select from the following options to continue.",quick_replies)
@@ -115,6 +119,14 @@ def receive_message():
                     elif response == 'retention':
                         quick_replies = [
                                             {
+                                                "content_type":"text",
+                                                "title": "Retention Status",
+                                                "payload":"retention",
+                                            },{
+                                                "content_type":"text",
+                                                "title": "Events",
+                                                "payload":"events"
+                                            },{
                                                 "content_type":"text",
                                                 "title": "Main Menu",
                                                 "payload":"menu"
@@ -126,6 +138,14 @@ def receive_message():
                         quick_replies = [
                                             {
                                                 "content_type":"text",
+                                                "title": "Retention Status",
+                                                "payload":"retention",
+                                            },{
+                                                "content_type":"text",
+                                                "title": "Events",
+                                                "payload":"events"
+                                            },{
+                                                "content_type":"text",
                                                 "title": "Main Menu",
                                                 "payload":"menu"
                                             }
@@ -134,7 +154,7 @@ def receive_message():
                         send_message(recipient_id, "Brand Camp is this week! Learn all about the foundations of Marketing here! Register for our exciting events at bit.ly/BrandCamp")
                         quick_reply_message(recipient_id, "That's it for this week!",quick_replies)
                     
-                    elif response == 'Main Menu':
+                    elif response == 'menu':
                         quick_replies = [
                                             {
                                                 "content_type":"text",
