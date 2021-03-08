@@ -96,6 +96,10 @@ def receive_message():
                                                 "payload":"menu"
                                             }
                                         ]
+                        
+                        fields = ['id','name','first_name','last_name','profile_pic']
+                        
+                        bot.get_user_info(recipient_id,fields)
                         quick_reply_message(recipient_id,"Please share us the email attached to your Facebook Account to verify your membership",quick_replies)
                     
                     elif re.search(r"^[a-z0-9\._]+[@]\w+[.]\w+",response):
