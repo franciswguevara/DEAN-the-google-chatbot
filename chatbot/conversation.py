@@ -52,6 +52,7 @@ class processor:
                 response.attachments = temp
                 return self.attachments(response)
         #postback response
+        print(message)
         elif temp := message.get('postback'):
             response.title = temp['title']
             return self.postback(response)
