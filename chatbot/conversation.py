@@ -20,7 +20,7 @@ class generator:
             self.add_property('Retention Status','retention')
             self.add_property('Events','events')
         elif name == 'email':
-            self.add_property('user_email','E-Mail Address','email')
+            self.add_property('E-Mail Address','email','user_email')
         elif name == 'menu':
             self.add_property('AJMA Member','member')
             self.add_property('External Partner','partner')
