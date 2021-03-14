@@ -1,5 +1,4 @@
-from chatbot.conversation import process_message, process_media
-from chatbot.scraper import push, links, scraper, get_request, timeout
+from chatbot.conversation import generator, processor
 from chatbot.pymessenger_updated import Bot
 from dotenv import load_dotenv
 from flask import Flask, request
@@ -7,7 +6,6 @@ import functools
 import json
 import os
 import random
-import re
 import pickle
 import time
 
@@ -17,223 +15,62 @@ app = Flask(__name__)
 ACCESS_TOKEN = os.environ['PAGE_ACCESS_TOKEN']
 VERIFY_TOKEN = os.environ['VERIFY_TOKEN']
 bot = Bot(ACCESS_TOKEN)
-df = {}
-message_dict = {}
-initial_message = {}
+memory = {}
+
+class response:
+    def __init__(self, output, memory):
+        
+        #Declare attributes
+        self.message = output['entry'][0]['messaging'][0]
+        self.memory = memory
+        self.uid = str(self.message['sender']['id'])
+        
+        self.dict = None
+        self.nlp = None
+        self.reply = None
+        self.text = None
+        
+        self.no_repeat()
+
+        fields = ['id','name','first_name','last_name','profile_pic']
+        print(bot.get_user_info(self.uid,fields))
+
+    def no_repeat(self):
+        '''Stops message spam'''
+
+        with open('message.pickle', 'rb') as x:
+            past_memory = pickle.load(x)
+        if past_memory.get(self.uid):
+            if self.message == past_memory[self.uid]:
+                return 'Message Processed'
+        self.memory[self.uid] = self.message
+        with open('message.pickle', 'wb') as x:
+            pickle.dump(self.memory, x, protocol=pickle.HIGHEST_PROTOCOL)   
+    
+    def send_message(self):
+        bot.send_quick_replies(self.uid,self.reply,self.dict)
 
 #We will receive messages that Facebook sends our bot at this endpoint 
 @app.route("/", methods=['GET', 'POST'])
 def receive_message():
-    #remember list of articles and what are article the user is reading
-    global df
-    global message_dict
-    global initial_message
+
+    global memory
 
     if request.method == 'GET':
         """Before allowing people to message your bot, Facebook has implemented a verify token
         that confirms all requests that your bot receives came from Facebook.""" 
         token_sent = request.args.get("hub.verify_token")
-
         return verify_fb_token(token_sent)
+
     #if the request was not get, it must be POST and we can just proceed with sending a message back to user
     else:
-        if os.path.exists('df.pickle'):
-            with open('df.pickle', 'rb') as x:
-                df = pickle.load(x)
-
-        with open('message.pickle', 'wb') as x:
-            pickle.dump(message_dict, x, protocol=pickle.HIGHEST_PROTOCOL)
-
         # Get POST request sent to the bot
         output = request.get_json()
         print(output)
 
         # Get message details
-        message = output['entry'][0]['messaging'][0]
-
-        #Facebook Messenger ID for user so we know where to send response back to
-        recipient_id = str(message['sender']['id'])
-        
-        message_dict[recipient_id] = message
-
-        #If user sent a message
-        if message.get('message'):
-            
-            #Stops message spam
-            with open('message.pickle', 'rb') as x:
-                previous_message = pickle.load(x)
-                check_message = previous_message
-
-            #Store recipient ID in previous message
-            if check_message.get(recipient_id):
-                pass
-            else:
-                initial_message[recipient_id] = {}
-                previous_message = initial_message
-
-            if message == previous_message[recipient_id]:
-                print('STOP FUNCTION BEFORE IT SPAMS')
-                return 'message processed'
-            
-            #If message is text
-            if text := message['message'].get('text'):                            
-                
-                #Retrieve NLP analysis
-                nlp = message['message'].get('nlp')
-                
-                if response := message['message'].get('quick_reply'):
-                    response = response['payload'] 
-                    
-                    if response == 'registration':
-                        quick_replies = [
-                                            {
-                                                "content_type":"user_email",
-                                                "title": "E-Mail Address",
-                                                "payload":"email",
-                                            },{
-                                                "content_type":"text",
-                                                "title": "Main Menu",
-                                                "payload":"menu"
-                                            }
-                                        ]
-                        
-                        fields = ['id','name','first_name','last_name','profile_pic']
-                        
-                        print(bot.get_user_info(recipient_id,fields))
-                        quick_reply_message(recipient_id,"Please share us the email attached to your Facebook Account to verify your membership",quick_replies)
-                    
-                    elif re.search(r"^[a-z0-9\._]+[@]\w+[.]\w+",response):
-                        quick_replies = [
-                                            {
-                                                "content_type":"text",
-                                                "title": "Retention Status",
-                                                "payload":"retention",
-                                            },{
-                                                "content_type":"text",
-                                                "title": "Events",
-                                                "payload":"events"
-                                            },{
-                                                "content_type":"text",
-                                                "title": "Main Menu",
-                                                "payload":"menu"
-                                            }
-                                        ]
-                        quick_reply_message(recipient_id,"User Verified! Welcome AJMAn! Select from the following options to continue.",quick_replies)
-                    
-                    elif response == 'retention':
-                        quick_replies = [
-                                            {
-                                                "content_type":"text",
-                                                "title": "Retention Status",
-                                                "payload":"retention",
-                                            },{
-                                                "content_type":"text",
-                                                "title": "Events",
-                                                "payload":"events"
-                                            },{
-                                                "content_type":"text",
-                                                "title": "Main Menu",
-                                                "payload":"menu"
-                                            }
-                                        ]
-                        quick_reply_message(recipient_id, "You have 3 checks left until you're retained. Keep it up!",quick_replies)
-
-                    elif response == 'events':
-                        quick_replies = [
-                                            {
-                                                "content_type":"text",
-                                                "title": "Retention Status",
-                                                "payload":"retention",
-                                            },{
-                                                "content_type":"text",
-                                                "title": "Events",
-                                                "payload":"events"
-                                            },{
-                                                "content_type":"text",
-                                                "title": "Main Menu",
-                                                "payload":"menu"
-                                            }
-                                        ]
-                        send_message(recipient_id, "AJMA Week is this week! Bond with your friends in fun and games here! Register for our exciting events at bit.ly/AJMAWeek")
-                        send_message(recipient_id, "Brand Camp is this week! Learn all about the foundations of Marketing here! Register for our exciting events at bit.ly/BrandCamp")
-                        quick_reply_message(recipient_id, "That's it for this week!",quick_replies)
-                    
-                    elif response == 'partner':
-                        quick_replies = [
-                                            {
-                                                "content_type":"text",
-                                                "title": "Main Menu",
-                                                "payload":"menu"
-                                            }
-                                        ]
-        
-                        quick_reply_message(recipient_id,"Good day! You may email ajma.orgpartnerships@gmail.com for organizational partnerships or ajma.partnerships@gmail.com for external partnerships. Thank you!",quick_replies)
-
-                    elif response == 'menu':
-                        quick_replies = [
-                                            {
-                                                "content_type":"text",
-                                                "title": "AJMA Member",
-                                                "payload":"registration",
-                                            },{
-                                                "content_type":"text",
-                                                "title": "External Partner",
-                                                "payload":"partner"
-                                            }
-                                        ]
-                        quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Marketing Association. Please use any of the quick replies below to navigate.",quick_replies)
-                    
-                elif answer := process_message(text):
-                    send_message(recipient_id,answer)
-                elif text == 'Main Menu':
-                    quick_replies = [
-                                        {
-                                            "content_type":"text",
-                                            "title": "AJMA Member",
-                                            "payload":"registration",
-                                        },{
-                                            "content_type":"text",
-                                            "title": "External Partner",
-                                            "payload":"partner"
-                                        }
-                                    ]
-                    quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Marketing Association. Please use any of the quick replies below to navigate.",quick_replies)
-                else:
-                    send_message(recipient_id,"What do you mean..When you nod your head yes but you wanna say no :(")
-                return "Messaged Processed"
-            #if user sends us a GIF, photo,video, or any other non-text item
-            if message['message'].get('attachments'):
-                #process_media(message['message'].get('attachments'))
-                pass
-                return "Messaged Processed"
-        #If user clicked one of the postback buttons
-        elif message.get('postback'):
-            if message['postback'].get('title'):
-                #If user clicks the get started button
-                if message['postback']['title'] == 'Get Started':
-                    quick_replies = [
-                                        {
-                                            "content_type":"text",
-                                            "title": "AJMA Member",
-                                            "payload":"registration",
-                                        },{
-                                            "content_type":"text",
-                                            "title": "External Partner",
-                                            "payload":"partner"
-                                        }
-                                    ]
-                    quick_reply_message(recipient_id, "Good Day! This is the Official Facebook Page of the Ateneo Junior Marketing Association. Please use any of the quick replies below to navigate.",quick_replies)
-                
-        else:
-            #gets triggered if there is another type of message that's not message/postback
-            pass
-    return "Message Processed"
-
-def quick_reply_message(recipient_id,message,quick_replies):
-    '''Send quick reply message to person'''
-    bot.send_quick_replies(recipient_id,message,quick_replies)
-    return "success"
-
+        message = response(output,memory)
+        processor(message)
 
 def verify_fb_token(token_sent):
     #take token sent by facebook and verify it matches the verify token you sent
@@ -242,32 +79,20 @@ def verify_fb_token(token_sent):
         return request.args.get("hub.challenge")
     return 'Invalid verification token'    
 
-#uses PyMessenger to send response to user
-def send_message(recipient_id, response):
-    '''sends user the text message provided via input response parameter'''
-    bot.send_text_message(recipient_id, response)
-    return "success"
-
-#uses PyMessenger to send message with button to user
-def button_message(recipient_id,response,buttons):
-    '''sends user the button message provided via input response parameter'''
-    bot.send_button_message(recipient_id,response,buttons)
-    return "success"
-
-def feedback(recipient_id):
-    '''Send a feedback button to let them provide feedback'''
-    if random.random() <= 0.3:
-        time.sleep(1.5)
-        message = 'Thank you for using DEAN! If you have any comments or suggestions, let us know here! :)'
-        buttons = [
-                        {
-                            "type":"postback",
-                            "title":"Feedback",
-                            "payload":recipient_id
-                        }
-                    ]
-        button_message(recipient_id,message,buttons)
-    return "success"
+# def feedback(recipient_id):
+#     '''Send a feedback button to let them provide feedback'''
+#     if random.random() <= 0.3:
+#         time.sleep(1.5)
+#         message = 'Thank you for using DEAN! If you have any comments or suggestions, let us know here! :)'
+#         buttons = [
+#                         {
+#                             "type":"postback",
+#                             "title":"Feedback",
+#                             "payload":recipient_id
+#                         }
+#                     ]
+#         button_message(recipient_id,message,buttons)
+#     return "success"
 
 def timer(func):
     '''Print the Runtime of the decorated function'''
