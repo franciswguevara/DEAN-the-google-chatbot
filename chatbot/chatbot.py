@@ -83,6 +83,7 @@ def receive_message():
         # Get message details
         message = response(output,memory)
         processor(message)
+        return "Message Processed"
 
 def verify_fb_token(token_sent):
     #take token sent by facebook and verify it matches the verify token you sent
