@@ -57,8 +57,8 @@ class response:
         
         self.memory[self.uid] = self.message
         
-    
     def send_message(self):
+        print(self.uid,self.reply,self.dict)
         bot.send_quick_replies(self.uid,self.reply,self.dict)
         return "Message Processed"
 

@@ -42,8 +42,6 @@ class processor:
                 #quick reply
                 if temp := message.get('quick_reply'):
                     response.payload = temp['payload']
-                    print('QUICKREPLY ENTERED')
-                    print(response.payload)
                     return self.quick_reply(response)
                 #normal text
                 else:
@@ -69,7 +67,6 @@ class processor:
     def quick_reply(self,response):
         '''Handles the sorting of type of quick reply'''
         payload = response.payload
-        print(payload)
         factory = generator()
 
         if payload == 'member':
@@ -91,7 +88,6 @@ class processor:
             factory.preset_menu('partner')
             response.reply = 'Partner Yay'
         elif payload == 'menu':
-            print('Menu')
             factory.preset_menu('menu')
         response.dict = factory.dict
         print(response.dict)
