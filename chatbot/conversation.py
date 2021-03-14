@@ -35,6 +35,7 @@ class processor:
         '''Handles the sorting of type of message'''
         message = response.message
         #message
+        print(message)
         if message := message.get('message'):
             #text
             if temp := message.get('text'):
@@ -52,7 +53,6 @@ class processor:
                 response.attachments = temp
                 return self.attachments(response)
         #postback response
-        print(message)
         elif temp := message.get('postback'):
             response.title = temp['title']
             return self.postback(response)
