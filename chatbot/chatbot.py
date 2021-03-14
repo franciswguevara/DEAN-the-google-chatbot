@@ -37,15 +37,17 @@ class response:
 
     def no_repeat(self):
         '''Stops message spam'''
+        with open('message.pickle', 'wb') as x:
+            pickle.dump(self.memory, x, protocol=pickle.HIGHEST_PROTOCOL)   
 
         with open('message.pickle', 'rb') as x:
             past_memory = pickle.load(x)
         if past_memory.get(self.uid):
             if self.message == past_memory[self.uid]:
                 return 'Message Processed'
+        
         self.memory[self.uid] = self.message
-        with open('message.pickle', 'wb') as x:
-            pickle.dump(self.memory, x, protocol=pickle.HIGHEST_PROTOCOL)   
+        
     
     def send_message(self):
         bot.send_quick_replies(self.uid,self.reply,self.dict)
