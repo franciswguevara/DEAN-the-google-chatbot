@@ -27,24 +27,22 @@ class response:
         self.memory = memory
         self.uid = str(self.message['sender']['id'])
 
-        self.no_repeat()
-        self.user_info()
-
         self.dict = None
         self.nlp = None
         self.reply = None
         self.text = None
-        
-        
+
+        self.no_repeat()
+        self.user_info()
 
     def user_info(self):
+        '''Retrieve user information'''
         fields = ['id','name','first_name','last_name','profile_pic']
         user = bot.get_user_info(self.uid,fields)
         self.name = user['name']
         self.first_name = user['first_name']
         self.last_name = user['last_name']
         self.picture = user['profile_pic']
-        return
 
     def no_repeat(self):
         '''Stops message spam'''
@@ -83,7 +81,7 @@ def receive_message():
 
         # Get message details
         message = response(output,memory)
-        processor(message)
+        #processor(message)
 
 def verify_fb_token(token_sent):
     #take token sent by facebook and verify it matches the verify token you sent
