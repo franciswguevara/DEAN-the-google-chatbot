@@ -89,8 +89,8 @@ class processor:
             response.reply = 'Partner Yay'
         elif payload == 'menu':
             factory.preset_menu('menu')
+            response.reply = 'Menu Yay'
         response.dict = factory.dict
-        print(response.dict)
         response.send_message()
 
     def postback(self,response):
