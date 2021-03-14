@@ -60,6 +60,7 @@ class response:
     
     def send_message(self):
         bot.send_quick_replies(self.uid,self.reply,self.dict)
+        return "Message Processed"
 
 #We will receive messages that Facebook sends our bot at this endpoint 
 @app.route("/", methods=['GET', 'POST'])
@@ -81,7 +82,7 @@ def receive_message():
 
         # Get message details
         message = response(output,memory)
-        #processor(message)
+        processor(message)
 
 def verify_fb_token(token_sent):
     #take token sent by facebook and verify it matches the verify token you sent
