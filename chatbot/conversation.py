@@ -53,8 +53,8 @@ class processor:
                 response.attachments = temp
                 return self.attachments(response)
         #postback response
-        elif temp := message.get('postback'):
-            response.title = temp['title']
+        elif message.get('postback'):
+            response.title = message['postback']['title']
             return self.postback(response)
         #don't understand how this will get triggered
         else:
