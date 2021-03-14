@@ -75,6 +75,7 @@ class processor:
             #     pass
             # else:
             factory.preset_menu('email')
+            response.reply('Email?')
         elif re.search(r"^[a-z0-9\._]+[@]\w+[.]\w+",payload):
             factory.preset_menu('member')
             response.reply = 'Email Yay'
