@@ -36,7 +36,8 @@ class processor:
         message = response.message
         #message
         print(message)
-        if message := message.get('message'):
+        if message.get('message'):
+            message = message.get('message')
             #text
             if temp := message.get('text'):
                 response.text = temp
