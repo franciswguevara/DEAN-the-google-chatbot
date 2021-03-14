@@ -39,19 +39,19 @@ class processor:
         if message.get('message'):
             message = message.get('message')
             #text
-            if temp := message.get('text'):
-                response.text = temp
+            if message.get('text'):
+                response.text = message.get('text')
                 #quick reply
-                if temp := message.get('quick_reply'):
-                    response.payload = temp['payload']
+                if message.get('quick_reply'):
+                    response.payload = message['quick_reply']['payload']
                     return self.quick_reply(response)
                 #normal text
                 else:
                     response.nlp = message.get('nlp')
                     return self.text(response)
             #photo or video    
-            if temp := message.get('attachments'):
-                response.attachments = temp
+            if message.get('attachments'):
+                response.attachments = message.get('attachments')
                 return self.attachments(response)
         #postback response
         elif message.get('postback'):
