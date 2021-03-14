@@ -19,21 +19,32 @@ memory = {}
 
 class response:
     def __init__(self, output, memory):
+        #User Information
+        
         
         #Declare attributes
         self.message = output['entry'][0]['messaging'][0]
         self.memory = memory
         self.uid = str(self.message['sender']['id'])
-        
+
+        self.no_repeat()
+        self.user_info()
+
         self.dict = None
         self.nlp = None
         self.reply = None
         self.text = None
         
-        self.no_repeat()
+        
 
+    def user_info(self):
         fields = ['id','name','first_name','last_name','profile_pic']
-        print(bot.get_user_info(self.uid,fields))
+        user = bot.get_user_info(self.uid,fields)
+        self.name = user['name']
+        self.first_name = user['first_name']
+        self.last_name = user['last_name']
+        self.picture = user['profile_pic']
+        return
 
     def no_repeat(self):
         '''Stops message spam'''
